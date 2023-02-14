@@ -1,4 +1,4 @@
-﻿// Copyright (c) MudBlazor 2021
+// Copyright (c) MudBlazor 2021
 // MudBlazor licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -946,7 +947,10 @@ namespace MudBlazor
 
             if (editingSourceItem != null)
             {
-                foreach (var property in _properties)
+                //Filtering out properties that have the JsonIgnore attribute so that they are not replaced with nulls
+                foreach (var property in _properties.Where(p => !p.GetCustomAttributes(false)
+                              .OfType<JsonIgnoreAttribute>()
+                              .Any()))
                 {
                     if (property.CanWrite)
                         property.SetValue(editingSourceItem, property.GetValue(_editingItem));
